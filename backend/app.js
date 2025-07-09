@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 });
 
 // --- Define Routes (placeholder for now) ---
-// User routes will be added here later
+app.use('/api/auth', require('./routes/auth'));
 
 // --- Start Server ---
 const PORT = process.env.PORT || 5000; // Use port from .env or default to 5000
