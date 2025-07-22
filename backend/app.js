@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const journalRoutes = require('./routes/journal')
 
 const app = express();
 
@@ -24,11 +25,13 @@ connectDB();
 
 // --- Basic Route (for testing if server is running) ---
 app.get('/', (req, res) => {
+    console.log('--- Root route hit! ---');
     res.send('API is running...');
 });
 
 // --- Define Routes (placeholder for now) ---
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/journal', journalRoutes);
 
 // --- Start Server ---
 const PORT = process.env.PORT || 5000; // Use port from .env or default to 5000
