@@ -1,20 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const JournalEntry = require('../models/JournalEntry');
+const auth = require('../middleware/auth');
 
 // @route POST api/journal
 // @desc Create a journal entry
 // @access Private (will add authentication later)
-router.post('/', async (req, res) => {
-    // For now, I'll manually assign a user ID for testing.
-    // Later, this will come from an authenticated user token.
-    const tempUserId = '687ef27dd832a8128d3a8f1e';
-
+router.post('/', auth, async (req, res) => {
     const { title, content, mood } = req.body;
 
     try {
         const newEntry = new JournalEntry({
-            user: tempUserId,
+            user: req.user.id,
             title,
             content,
             mood
@@ -22,6 +19,7 @@ router.post('/', async (req, res) => {
 
         const entry = await newEntry.save();
         res.status(201).json(entry);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -31,11 +29,10 @@ router.post('/', async (req, res) => {
 // @route GET api.journal
 // @desc Get all journal entries for a user
 // @access Private (will add authentication later)
-router.get('/', async (req, res) => {
-    const tempUserId = '687ef27dd832a8128d3a8f1e';
+router.get('/', auth, async (req, res) => {
 
     try {
-        const entries = await JournalEntry.find({ user: tempUserId }).sort({ date: -1 });
+        const entries = await JournalEntry.find({ user: req.user.id }).sort({ date: -1 });
         res.json(entries);
     } catch (err) {
         console.error(err.message);
@@ -46,11 +43,10 @@ router.get('/', async (req, res) => {
 // @route GET qpi/journal/:id
 // @desc Get single journal entry by ID
 // @access Private (will add authentication later)
-router.get('/:id', async (req, res) => {
-    const tempUserId = '687ef27dd832a8128d3a8f1e';
+router.get('/:id', auth, async (req, res) => {
 
     try {
-        const entry = await JournalEntry.findOne({ _id: req.params.id, user: tempUserId });
+        const entry = await JournalEntry.findOne({ _id: req.params.id, user: req.user.id });
 
         if (!entry) {
             return res.status(404).json({ msg: 'Journal entry not found'});
@@ -71,8 +67,7 @@ router.get('/:id', async (req, res) => {
 // @route   PUT api/journal/:id
 // @desc    Update a journal entry
 // @access  Private (will add authentication later)
-router.put('/:id', async (req, res) => {
-    const tempUserId = '687ef27dd832a8128d3a8f1e';
+router.put('/:id', auth, async (req, res) => {
 
     const { title, content, mood } = req.body;
 
@@ -83,20 +78,14 @@ router.put('/:id', async (req, res) => {
     if (mood) entryFields.mood = mood;
 
     try {
-        let entry = await JournalEntry.findOne({ _id: req.params.id, user: tempUserId });
+        let entry = await JournalEntry.findOne({ _id: req.params.id, user: req.user.id });
 
         if (!entry) {
             return res.status(404).json({ msg: 'Journal entry not found'});
         }
 
-        // Ensure user owns the entry
-        // This check will be more robust with actual authentication middleware
-        if (entry.user.toString() !== tempUserId) {
-            return res.status(401).json({ msg: 'User not authorized' });
-        }
-
         entry = await JournalEntry.findOneAndUpdate(
-            { _id: req.params.id },
+            { _id: req.params.id, user: req.user.id },
             { $set: entryFields },
             { new: true }
         );
@@ -115,23 +104,17 @@ router.put('/:id', async (req, res) => {
 // @route   DELETE api/journal/:id
 // @desc    Delete a journal entry
 // @access  Private (will add authentication later)
-router.delete('/:id', async (req, res) => {
-    const tempUserId = '687ef27dd832a8128d3a8f1e';
+router.delete('/:id', auth, async (req, res) => {
 
     try {
         // Find the entry to ensure it belongs to the authenticated user
-        const entry = await JournalEntry.findOne({ _id: req.params.id, user: tempUserId });
+        const entry = await JournalEntry.findOne({ _id: req.params.id, user: req.user.id });
 
         if (!entry) {
             return res.status(404).json({ msg: 'Journal entry not found' });
         }
 
-        // Ensure user owns the entry
-        if (entry.user.toString() !== tempUserId) {
-            return res.status(401).json({ msg: 'User not authorized' });
-        }
-
-        await JournalEntry.findOneAndDelete({ _id: req.params.id }); // Using findOneAndDelete for clarity with user ID
+        await JournalEntry.findOneAndDelete({ _id: req.params.id, user: req.user.id }); // Using findOneAndDelete for clarity with user ID
 
         res.json({ msg: 'Journal entry removed' });
 
