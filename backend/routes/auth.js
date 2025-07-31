@@ -28,6 +28,8 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
+        console.log(`New user registered: ${user.email}`);
+
         // In a real app, I'd send a JWT token here (for logging automatically). For now, just a success message.
         res.status(201).json({ msg: 'User registered successfully', userId: user.id });
 
@@ -55,6 +57,8 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
+
+        console.log(`User logged in: ${user.email}`);
 
         // 3. If credentials are valid, create JWT payload
         const payload = {

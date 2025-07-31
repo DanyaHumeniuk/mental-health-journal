@@ -3,7 +3,7 @@ import Login from './components/Auth/Login';
 
 const App = () => {
   return (
-    <div classname="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
       <h1 className="text-3xl font-bold text-center mt-8">Welcome to Mental Health Journal App!</h1>
       
       <div className="w-full max-w-5xl mx-auto px-4">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -12,8 +13,21 @@ const Login = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
-        console.log('Logging in user:', formData);
-        // Later: Send data to backend
+        const user = {
+            email,
+            password
+        };
+
+        try {
+            const res = await axios.post('/api/auth/login', user);
+
+            console.log('Login Success! Here is your token:', res.data.token);
+
+            // Later: We will save this token to local storage and manage state
+        } catch (err) {
+            console.error('Login Error:', err.response.data);
+            // Later: We will show an error message to the user
+        }
     };
 
   return (

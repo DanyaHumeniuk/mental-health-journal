@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -18,8 +19,21 @@ const Register = () => {
             console.log('Passwords do not match');
             // Later: Show alert to user
         } else {
-            console.log('Registering user:', formData);
-            // Later: Send data to backend
+            const newUser = {
+                username,
+                email,
+                password
+            };
+
+            try {
+                const res = await axios.post('/api/auth/register', newUser);
+
+                console.log('Registration Success:', res.data);
+                // We will handle redirect and state management later
+            } catch (err) {
+                console.error('Registration Error:', err.response.data);
+                // We will show an error message to the user here later
+            }
         }
     };
 
