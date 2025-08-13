@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Register = () => {
     });
 
     const { username, email, password, password2 } = formData;
+    const navigate = useNavigate();
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -30,6 +32,8 @@ const Register = () => {
 
                 console.log('Registration Success:', res.data);
                 // We will handle redirect and state management later
+
+                navigate('/login');
             } catch (err) {
                 console.error('Registration Error:', err.response.data);
                 // We will show an error message to the user here later
@@ -38,7 +42,7 @@ const Register = () => {
     };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
+    <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl min-h-52 sm:min-h-64 md:min-h-80">
         <h2 className="text-2xl font-bold mb-6 text-center">Register Account</h2>
         <form onSubmit={onSubmit}>
             <div className="mb-4">

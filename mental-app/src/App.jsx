@@ -1,19 +1,22 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
+import Home from './components/Auth/Home';
 
-const App = () => {
+function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
-      <h1 className="text-3xl font-bold text-center mt-8">Welcome to Mental Health Journal App!</h1>
-      
-      <div className="w-full max-w-5xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-          <Register />
-          <Login />
+    <Router>
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
+        <div className="w-full max-w-5xl mx-auto px-4 flex-grow flex items-center justify-center">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
         </div>
       </div>
-    </div>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
