@@ -10,7 +10,7 @@ const Journal = () => {
         navigate('/login');
     }
   return (
-    <div>
+    <div className="text-center p-8 bg-white shadow-xl rounded-lg">
         <h1 className="text-3xl font-bold mb-6 text-gray-800">Your Journal Dashboard</h1>
         <p className="text-lg text-gray-600 mb-8">
             This is where you'll be able to create, view, and manage your journal entries.
