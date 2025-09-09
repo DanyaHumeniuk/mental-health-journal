@@ -1,7 +1,16 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/journal');
+    }
+  }, [navigate])
+  
   return (
     <div className="flex flex-col text-center bg-white shadow-xl rounded-lg w-full justify-center items-center min-h-[800px]">
       <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome to Your Journal!</h1>
