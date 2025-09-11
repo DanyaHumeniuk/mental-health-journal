@@ -3,6 +3,7 @@ import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import Home from './components/Auth/Home';
 import Journal from './components/Auth/Journal';
+import PrivateRoute from './components/Auth/PrivateRoute';
 
 function App() {
   return (
@@ -13,7 +14,11 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/journal" element={<Journal />} />
+
+            <Route path="/" element={<PrivateRoute />}>
+              <Route path="/journal" element={<Journal />} />
+            </Route>
+            
           </Routes>
         </div>
       </div>
