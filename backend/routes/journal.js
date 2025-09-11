@@ -7,14 +7,14 @@ const auth = require('../middleware/auth');
 // @desc Create a journal entry
 // @access Private (will add authentication later)
 router.post('/', auth, async (req, res) => {
-    const { title, content, mood } = req.body;
+    console.log('Received new journal entry request:', req.body);
+    const { title, content } = req.body;
 
     try {
         const newEntry = new JournalEntry({
             user: req.user.id,
             title,
-            content,
-            mood
+            content
         });
 
         const entry = await newEntry.save();
