@@ -30,8 +30,21 @@ router.post('/register', async (req, res) => {
 
         console.log(`New user registered: ${user.email}`);
 
-        // In a real app, I'd send a JWT token here (for logging automatically). For now, just a success message.
-        res.status(201).json({ msg: 'User registered successfully', userId: user.id });
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' },
+            (err, token) => {
+                if (err) throw err;
+                res.status(201).json({ token });
+            }
+        );
 
     } catch (err) {
         console.error(err.message);

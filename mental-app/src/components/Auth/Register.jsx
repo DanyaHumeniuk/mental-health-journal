@@ -18,26 +18,35 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         if (password !== password2) {
-            console.log('Passwords do not match');
-            // Later: Show alert to user
-        } else {
+            console.error("Passwords do not match!");
+            alert("Passwords do not match!");
+            return;
+        }
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
             const newUser = {
                 username,
                 email,
                 password
             };
 
-            try {
-                const res = await axios.post('/api/auth/register', newUser);
+            const res = await axios.post('/api/auth/register', newUser, config);
 
-                console.log('Registration Success:', res.data);
-                // We will handle redirect and state management later
+            if (res.data.token) {
+                localStorage.setItem('token', res.data.token);
+                console.log('Registration successful! Logging in automatically.');
 
-                navigate('/login');
-            } catch (err) {
-                console.error('Registration Error:', err.response.data);
-                // We will show an error message to the user here later
+                navigate('/journal');
             }
+
+        } catch (err) {
+            console.error('Registration failed:', err.response.data);
         }
     };
 
