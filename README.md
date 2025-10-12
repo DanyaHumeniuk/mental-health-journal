@@ -103,6 +103,5 @@ The API follows a RESTful architecture, utilizing JWT middleware to protect auth
 
 ## 🤝 Project Roadmap & Future Enhancements
 
-* **Finalize AI Integration:** Complete the implementation of the `POST /api/ai/analyze` route to provide personalized wellness recommendations immediately after entry submission.
 * **Toast Notifications:** Add success/error message toasts (e.g., using React Hot Toast) for better user feedback on CRUD operations.
 * **Filtering/Sorting:** Implement functionality to sort and filter journal entries by date.
