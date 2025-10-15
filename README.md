@@ -1,6 +1,8 @@
 # 🧠 Mental Wellness Journal (Full-Stack MERN Application)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue)](https://mental-health-journal-psi.vercel.app)
+[<p align="center">
+  <img src="https://img.shields.io/badge/LIVE%20DEMO-DEPLOYED%20ON%20VERCEL-3498DB?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo on Vercel" width="300"/>
+</p>](https://mental-health-journal-psi.vercel.app)
 
 ## 🌟 Project Overview
 
