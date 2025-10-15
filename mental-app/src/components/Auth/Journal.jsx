@@ -28,7 +28,7 @@ const Journal = () => {
                 }
             }
 
-            const res = await axios.get('/api/journal', config);
+            const res = await axios.get('https://mental-journal-api.onrender.com/api/journal', config);
             setEntries(res.data);
             console.log('Entries fetched successfully:', res.data);
         } catch (err) {
@@ -75,7 +75,7 @@ const Journal = () => {
                 }
             };
 
-            await axios.delete(`/api/journal/${id}`, config);
+            await axios.delete(`https://mental-journal-api.onrender.com/api/journal/${id}`, config);
 
             console.log('Journal entry deleted successfully!');
 
@@ -106,10 +106,10 @@ const Journal = () => {
             const entryData = { title, content };
 
             if (editingEntry) {
-                await axios.put(`/api/journal/${editingEntry._id}`, entryData, config);
+                await axios.put(`https://mental-journal-api.onrender.com/api/journal/${editingEntry._id}`, entryData, config);
                 console.log('Journal entry updated successfully!');
             } else {
-                await axios.post('/api/journal', entryData, config);
+                await axios.post('https://mental-journal-api.onrender.com/api/journal', entryData, config);
                 console.log('Journal entry saved successfully!');
             }
 

@@ -36,7 +36,7 @@ const Register = () => {
                 password
             };
 
-            const res = await axios.post('/api/auth/register', newUser, config);
+            const res = await axios.post('https://mental-journal-api.onrender.com/api/auth/register', newUser, config);
 
             if (res.data.token) {
                 localStorage.setItem('token', res.data.token);

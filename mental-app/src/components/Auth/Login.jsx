@@ -21,7 +21,7 @@ const Login = () => {
         };
 
         try {
-            const res = await axios.post('/api/auth/login', user);
+            const res = await axios.post('https://mental-journal-api.onrender.com/api/auth/login', user);
 
             // Store the JWT token in local storage
             localStorage.setItem('token', res.data.token);
@@ -29,7 +29,7 @@ const Login = () => {
             console.log('Login Success! Here is your token:', res.data.token);
 
             // Redirect the user to the home page
-            navigate('/');
+            navigate('/journal');
 
         } catch (err) {
             console.error('Login Error:', err.response.data);
