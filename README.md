@@ -1,5 +1,7 @@
 # 🧠 Mental Wellness Journal (Full-Stack MERN Application)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue)](https://mental-health-journal-psi.vercel.app)
+
 ## 🌟 Project Overview
 
 The **Mental Wellness Journal** is a secure, full-stack journaling application built with the MERN stack (MongoDB, Express, React, Node.js). It provides users with a private, authenticated space to track and manage their thoughts and feelings. The project demonstrates proficiency in building robust RESTful APIs, securing routes with JWT, and developing a clean, modern user interface.
