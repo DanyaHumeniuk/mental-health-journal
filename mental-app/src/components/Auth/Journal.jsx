@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import JournalEntry from '../JournalEntry'
+import toast from 'react-hot-toast';
 
 const Journal = () => {
     const [formData, setFormData] = useState({
@@ -77,9 +78,8 @@ const Journal = () => {
 
             await axios.delete(`https://mental-journal-api.onrender.com/api/journal/${id}`, config);
 
-            console.log('Journal entry deleted successfully!');
-
-            fetchEntries();
+            toast.success('Entry deleted.'); 
+            fetchEntries(); 
         } catch (err) {
             console.error('Failed to delete journal entry:', err.response.data);
         }
@@ -107,19 +107,19 @@ const Journal = () => {
 
             if (editingEntry) {
                 await axios.put(`https://mental-journal-api.onrender.com/api/journal/${editingEntry._id}`, entryData, config);
-                console.log('Journal entry updated successfully!');
+                toast.success('Entry updated!');
             } else {
                 await axios.post('https://mental-journal-api.onrender.com/api/journal', entryData, config);
-                console.log('Journal entry saved successfully!');
+                toast.success('Journal entry saved!');
             }
 
             setFormData({ title: '', content: ''});
             setEditingEntry(null);
-
             fetchEntries();
 
         } catch (err) {
-            console.error('Failed to save journal entry:', err.response.data);
+            toast.error('Failed to save. Please try again.');
+            console.error('Error saving entry:', err);
         }
     }
 

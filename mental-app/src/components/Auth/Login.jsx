@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -79,6 +79,14 @@ const Login = () => {
                 >
                     Login
                 </button>
+                <div className="mt-2 pb-3 text-center">
+                    <p className="text-gray-600 text-sm">
+                        New to the journal?{' '}
+                        <Link to="/register" className="text-green-600 hover:text-green-800 font-bold underline transition duration-200">
+                            Create an Account
+                        </Link>
+                    </p>
+                </div>
             </div>
         </form>
     </div>
