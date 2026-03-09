@@ -121,7 +121,22 @@ const Journal = () => {
             toast.error('Failed to save. Please try again.');
             console.error('Error saving entry:', err);
         }
-    }
+    };
+
+    const analyzeEntry = async (id) => {
+        const loadingToast = toast.loading('Gemini is analyzing your entry...');
+        try {
+            const token = localStorage.getItem('token');
+            const config = { headers: { 'x-auth-token': token } };
+            
+            const res = await axios.post(`http://localhost:3001/api/journal/analyze/${id}`, {}, config);
+            
+            toast.success('Insight generated! ✨', { id: loadingToast });
+            fetchEntries(); // Refresh the list to show the new insight
+        } catch (err) {
+            toast.error('AI Analysis failed.', { id: loadingToast });
+        }
+    };
 
   return (
     <div className="max-w-4xl mx-auto p-8 mt-10 bg-white rounded-lg shadow-xl">
@@ -197,6 +212,7 @@ const Journal = () => {
                         entry={entry}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onAnalyze={analyzeEntry}
                     />
                 ))
             ) : (
