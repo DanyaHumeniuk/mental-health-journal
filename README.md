@@ -4,16 +4,16 @@
 
 ## 🌟 Project Overview
 
-The **Mental Wellness Journal** is a secure, full-stack journaling application built with the MERN stack (MongoDB, Express, React, Node.js). It provides users with a private, authenticated space to track and manage their thoughts and feelings. The project demonstrates proficiency in building robust RESTful APIs, securing routes with JWT, and developing a clean, modern user interface.
+The **Mental Wellness Journal** is a secure, full-stack journaling application built with the MERN stack (MongoDB, Express, React, Node.js). It provides users with a private, authenticated space to track and manage their thoughts. Beyond standard CRUD operations, the application features an **integrated AI engine** that provides empathetic feedback and mindfulness insights, transforming a simple diary into an interactive wellness tool.
 
 ### Key Features
 
+* **AI-Powered Insights:** Integrates the **Google Gemini 3.1 Flash-Lite** model to provide real-time, empathetic analysis and mindfulness tips for every journal entry.
 * **Secure Authentication Flow:** Implements user registration and login secured by **JSON Web Tokens (JWT)** and password hashing with **bcrypt**.
 * **Seamless Onboarding:** Users are automatically logged in and redirected to the dashboard upon successful registration, minimizing friction.
 * **Full CRUD Functionality:** Users can **C**reate, **R**ead, **U**pdate, and **D**elete their private journal entries from a single, intuitive dashboard.
 * **Modular Architecture:** Clean separation of concerns with dedicated frontend and backend directories, promoting maintainability.
 * **Modern UI/UX:** Built with **React** and styled using **Tailwind CSS** for a responsive and accessible design.
-* **AI Integration Ready (Next Step):** Configured to easily integrate the **Google Gemini API** for future supportive analysis and actionable wellness recommendations.
 
 ---
 
@@ -27,6 +27,7 @@ The **Mental Wellness Journal** is a secure, full-stack journaling application b
 | **Database** | MongoDB, Mongoose | Flexible NoSQL database and Object Data Modeling (ODM) library. |
 | **Security** | JWT, bcryptjs | Securing routes and hashing user passwords. |
 | **HTTP** | Axios | Promise-based client for clean API communication. |
+| **AI SDK** | @google/genai | Leveraging the latest Gemini 3.1 2026 SDK. |
 
 ---
 
@@ -100,10 +101,13 @@ The API follows a RESTful architecture, utilizing JWT middleware to protect auth
 | **Journal** | `POST` | `/api/journal` | Creates a new entry (Requires `{title, content}`). | Private |
 | **Journal** | `PUT` | `/api/journal/:id` | Updates a specific entry by ID. | Private |
 | **Journal** | `DELETE` | `/api/journal/:id` | Deletes a specific entry by ID. | Private |
+| **Journal** | `POST` | `/api/journal/analyze/:id` | **Triggers AI analysis via Gemini 3.1.** | Private |
 
 ---
 
 ## 🤝 Project Roadmap & Future Enhancements
 
-* **Toast Notifications:** Add success/error message toasts (e.g., using React Hot Toast) for better user feedback on CRUD operations.
-* **Filtering/Sorting:** Implement functionality to sort and filter journal entries by date.
+* **[DONE] Gemini AI Integration:** Implemented empathetic analysis using the 2026 Flash-Lite model.
+* **UI/UX Polishing:** Adding **Framer Motion** for smooth insight transitions and **Glassmorphism** card designs.
+* **Sentiment Analytics:** Visualizing mood trends over time using Chart.js or Recharts.
+* **Toast Notifications:** Real-time feedback for CRUD and AI operations using React Hot Toast.
