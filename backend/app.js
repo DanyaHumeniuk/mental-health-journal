@@ -8,7 +8,13 @@ const journalRoutes = require('./routes/journal')
 const app = express();
 
 app.use(express.json()); // Allows parsing of JSON data in request bodies
-app.use(cors()); // Enables Cross-Origin Resource Sharing (important for frontend communication)
+app.use(cors({
+    origin: [
+        "http://localhost:5173", 
+        "https://mental-health-journal-psi.vercel.app"
+    ],
+    credentials: true
+})); // Enables Cross-Origin Resource Sharing (important for frontend communication)
 
 // --- Database Connection ---
 const connectDB = async () => {

@@ -129,7 +129,7 @@ const Journal = () => {
             const token = localStorage.getItem('token');
             const config = { headers: { 'x-auth-token': token } };
             
-            const res = await axios.post(`http://localhost:3001/api/journal/analyze/${id}`, {}, config);
+            const res = await axios.post(`https://mental-journal-api.onrender.com/api/journal/analyze/${id}`, {}, config);
             
             toast.success('Insight generated! ✨', { id: loadingToast });
             fetchEntries(); // Refresh the list to show the new insight
