@@ -23,6 +23,10 @@ const JournalEntrySchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    aiInsight: {
+        type: String,
+        default: ""
     }
 });
 

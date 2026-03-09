@@ -3,6 +3,12 @@ const router = express.Router();
 const JournalEntry = require('../models/JournalEntry');
 const auth = require('../middleware/auth');
 
+const { GoogleGenAI } = require("@google/genai");
+
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
+});
+
 // @route POST api/journal
 // @desc Create a journal entry
 // @access Private (will add authentication later)
@@ -124,6 +130,37 @@ router.delete('/:id', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Journal entry not found' });
         }
         res.status(500).send('Server Error');
+    }
+});
+
+// @route    POST api/journal/analyze/:id
+// @desc     Generate AI insight for a journal entry
+router.post('/analyze/:id', auth, async (req, res) => {
+    try {
+        const entry = await JournalEntry.findById(req.params.id);
+        if (!entry) return res.status(404).json({ msg: 'Entry not found' });
+
+        const result = await ai.models.generateContent({
+            model: "gemini-3-flash-preview", // OR "gemini-3.1-flash-lite-preview"
+            contents: [{
+                role: "user",
+                parts: [{
+                    text: `You are a supportive mental wellness assistant. 
+                    Analyze this journal entry: "${entry.content}". 
+                    Provide a short, 2-sentence empathetic insight or mindfulness tip.`
+                }]
+            }]
+        });
+
+        const aiText = result.text; 
+
+        entry.aiInsight = aiText;
+        await entry.save();
+
+        res.json(entry);
+    } catch (err) {
+        console.error("Gemini 3 API Error:", err);
+        res.status(500).json({ msg: 'AI Analysis failed', error: err.message });
     }
 });
 
