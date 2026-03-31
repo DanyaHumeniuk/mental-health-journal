@@ -4,42 +4,33 @@ import axios from 'axios';
 import JournalEntry from '../JournalEntry'
 import toast from 'react-hot-toast';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://mental-journal-api.onrender.com";
+
 const Journal = () => {
-    const [formData, setFormData] = useState({
-        title: '',
-        content: ''
-    });
+    const [formData, setFormData] = useState({ title: '', content: '' });
     const [entries, setEntries] = useState([]);
     const [editingEntry, setEditingEntry] = useState(null);
+    
+    const [isSaving, setIsSaving] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
     const { title, content } = formData;
     const navigate = useNavigate();
 
     const fetchEntries = async () => {
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('No token found.');
-                navigate('/login');
-                return;
-            }
+            if (!token) { navigate('/login'); return; }
 
-            const config = {
-                headers: {
-                    'x-auth-token': token
-                }
-            }
-
-            const res = await axios.get('https://mental-journal-api.onrender.com/api/journal', config);
+            const config = { headers: { 'x-auth-token': token } };
+            const res = await axios.get(`${API_BASE_URL}/api/journal`, config);
             setEntries(res.data);
-            console.log('Entries fetched successfully:', res.data);
         } catch (err) {
-            console.error('Error fetching entries:', err.response.data);
+            console.error('Error fetching entries:', err.response?.data);
         }
     };
 
-    useEffect(() => {
-            fetchEntries();
-    }, []);
+    useEffect(() => { fetchEntries(); }, []);
 
     const onLogout = () => {
         localStorage.removeItem('token');
@@ -50,10 +41,7 @@ const Journal = () => {
 
     const onEdit = (entry) => {
         setEditingEntry(entry);
-        setFormData({
-            title: entry.title,
-            content: entry.content
-        });
+        setFormData({ title: entry.title, content: entry.content });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -63,146 +51,101 @@ const Journal = () => {
     };
 
     const onDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this entry?")) return;
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-
-            const config = {
-                headers: {
-                    'x-auth-token': token
-                }
-            };
-
-            await axios.delete(`https://mental-journal-api.onrender.com/api/journal/${id}`, config);
-
+            const config = { headers: { 'x-auth-token': token } };
+            await axios.delete(`${API_BASE_URL}/api/journal/${id}`, config);
             toast.success('Entry deleted.'); 
             fetchEntries(); 
         } catch (err) {
-            console.error('Failed to delete journal entry:', err.response.data);
+            toast.error('Failed to delete.');
         }
     };
 
     const onSubmit = async e => {
         e.preventDefault();
+        setIsSaving(true); 
         try {
             const token = localStorage.getItem('token');
-
-            if (!token) {
-                console.error('No token found. Please log in.');
-                navigate('/login');
-                return;
-            }
-
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
-                }
-            };
-
+            const config = { headers: { 'Content-Type': 'application/json', 'x-auth-token': token } };
             const entryData = { title, content };
 
             if (editingEntry) {
-                await axios.put(`https://mental-journal-api.onrender.com/api/journal/${editingEntry._id}`, entryData, config);
+                await axios.put(`${API_BASE_URL}/api/journal/${editingEntry._id}`, entryData, config);
                 toast.success('Entry updated!');
             } else {
-                await axios.post('https://mental-journal-api.onrender.com/api/journal', entryData, config);
+                await axios.post(`${API_BASE_URL}/api/journal`, entryData, config);
                 toast.success('Journal entry saved!');
             }
 
             setFormData({ title: '', content: ''});
             setEditingEntry(null);
             fetchEntries();
-
         } catch (err) {
-            toast.error('Failed to save. Please try again.');
-            console.error('Error saving entry:', err);
+            toast.error('Failed to save.');
+        } finally {
+            setIsSaving(false); 
         }
     };
 
     const analyzeEntry = async (id) => {
         const loadingToast = toast.loading('Gemini is analyzing your entry...');
+        setIsAnalyzing(true);
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'x-auth-token': token } };
-            
-            const res = await axios.post(`https://mental-journal-api.onrender.com/api/journal/analyze/${id}`, {}, config);
-            
+            await axios.post(`${API_BASE_URL}/api/journal/analyze/${id}`, {}, config);
             toast.success('Insight generated! ✨', { id: loadingToast });
-            fetchEntries(); // Refresh the list to show the new insight
+            fetchEntries(); 
         } catch (err) {
             toast.error('AI Analysis failed.', { id: loadingToast });
+        } finally {
+            setIsAnalyzing(false);
         }
     };
 
   return (
     <div className="max-w-4xl mx-auto p-8 mt-10 bg-white rounded-lg shadow-xl">
         <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">Your Journal Dashboard</h1>
-            <button
-                onClick={onLogout}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition duration-300"
-            >
+            <h1 className="text-3xl font-bold text-gray-800 mr-32">Your Journal Dashboard</h1>
+            <button onClick={onLogout} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition duration-300">
                 Logout
             </button>
         </div>
 
-        <p className="text-lg text-gray-600 mb-8">
-            This is where you'll be able to create, view, and manage your journal entries.
-        </p>
-
         {/* Journal Entry Form */}
         <form onSubmit={onSubmit} className="mb-8 p-6 border-2 border-dashed border-gray-300 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                {editingEntry ? 'Edit Entry' : 'Create New Entry'}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">{editingEntry ? 'Edit Entry' : 'Create New Entry'}</h2>
             <div className="mb-4">
                 <input 
-                    type="text"
+                    name="title" value={title} onChange={onChange} required disabled={isSaving}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
                     placeholder="Title"
-                    name="title"
-                    value={title}
-                    onChange={onChange}
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    required
                 />
             </div>
             <div className="mb-4">
                 <textarea
-                    placeholder="Write your journal entry here..."
-                    name="content"
-                    value={content}
-                    onChange={onChange}
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    rows="8"
-                    required
+                    name="content" value={content} onChange={onChange} required disabled={isSaving}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                    rows="8" placeholder="Write your journal entry here..."
                 ></textarea>
             </div>
             <div className="flex space-x-4">
                 <button
                     type="submit"
-                    className={`font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 w-full transition duration-300 ${
-                        editingEntry ? 'bg-blue-500 hover:bg-blue-700 text-white focus:ring-blue-500' : 'bg-green-500 hover:bg-green-700 text-white focus:ring-green-500'
-                    }`}
+                    disabled={isSaving}
+                    className={`font-bold py-2 px-4 rounded-lg w-full transition duration-300 flex items-center justify-center ${
+                        editingEntry ? 'bg-blue-500 hover:bg-blue-700' : 'bg-green-500 hover:bg-green-700'
+                    } text-white disabled:bg-gray-400`}
                 >
-                    {editingEntry ? 'Save Changes' : 'Save Entry'}
+                    {isSaving ? (
+                        <><svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Saving...</>
+                    ) : (editingEntry ? 'Save Changes' : 'Save Entry')}
                 </button>
-                {editingEntry && (
-                    <button
-                        type="button"
-                        onClick={onCancelEdit}
-                        className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-gray-400 w-full md:w-1/3"
-                    >
-                        Cancel
-                    </button>
-                )}
             </div>
         </form>
 
-        {/* Journal Entries List - Displaying the fetched data */}
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Your Entries</h2>
         <div>
             {entries.length > 0 ? (
@@ -213,6 +156,7 @@ const Journal = () => {
                         onEdit={onEdit}
                         onDelete={onDelete}
                         onAnalyze={analyzeEntry}
+                        isAnalyzing={isAnalyzing} 
                     />
                 ))
             ) : (
