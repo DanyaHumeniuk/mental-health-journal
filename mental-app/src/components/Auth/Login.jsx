@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const { email, password } = formData;
     const navigate = useNavigate();
@@ -15,6 +18,9 @@ const Login = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
+
+        setIsLoading(true);
+
         const user = {
             email,
             password
@@ -25,15 +31,15 @@ const Login = () => {
 
             // Store the JWT token in local storage
             localStorage.setItem('token', res.data.token);
-
-            console.log('Login Success! Here is your token:', res.data.token);
-
-            // Redirect the user to the home page
+            toast.success('Welcome back!');
             navigate('/journal');
 
         } catch (err) {
-            console.error('Login Error:', err.response.data);
-            // Later: We will show an error message to the user
+            const errorMsg = err.response?.data?.msg || 'Login failed. Please check your credentials.';
+            toast.error(errorMsg);
+            console.error('Login Error:', err.response?.data);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -54,6 +60,7 @@ const Login = () => {
                     value={email}
                     onChange={onChange}
                     required
+                    disabled={isLoading}
                 />
             </div>
             <div className="mb-6">
@@ -70,16 +77,29 @@ const Login = () => {
                     onChange={onChange}
                     required
                     minLength="6"
+                    disabled={isLoading}
                 />
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center">
                 <button
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-300 ${
+                        isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-700'
+                    }`}
                     type="submit"
+                    disabled={isLoading}
                 >
-                    Login
+                    {isLoading ? (
+                        <div className="flex items-center justify-center">
+                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Signing in...
+                        </div>
+                    ) : 'Login'}
                 </button>
-                <div className="mt-2 pb-3 text-center">
+                
+                <div className="mt-4 text-center">
                     <p className="text-gray-600 text-sm">
                         New to the journal?{' '}
                         <Link to="/register" className="text-green-600 hover:text-green-800 font-bold underline transition duration-200">

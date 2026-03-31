@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ const Register = () => {
         password2: ''
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const { username, email, password, password2 } = formData;
     const navigate = useNavigate();
 
@@ -17,36 +20,35 @@ const Register = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
+        
         if (password !== password2) {
-            console.error("Passwords do not match!");
-            alert("Passwords do not match!");
+            toast.error("Passwords do not match!");
             return;
         }
 
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
+        setIsLoading(true);
 
+        try {
             const newUser = {
                 username,
                 email,
                 password
             };
 
-            const res = await axios.post('https://mental-journal-api.onrender.com/api/auth/register', newUser, config);
+            const res = await axios.post('https://mental-journal-api.onrender.com/api/auth/register', newUser);
 
             if (res.data.token) {
                 localStorage.setItem('token', res.data.token);
-                console.log('Registration successful! Logging in automatically.');
-
+                toast.success('Account created! Welcome to your journal.');
                 navigate('/journal');
             }
 
         } catch (err) {
-            console.error('Registration failed:', err.response.data);
+            const errorMsg = err.response?.data?.msg || 'Registration failed. Please try again.';
+            toast.error(errorMsg);
+            console.error('Registration Error:', err.response?.data);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -67,6 +69,7 @@ const Register = () => {
                     value={username}
                     onChange={onChange}
                     required
+                    disabled={isLoading}
                 />
             </div>
             <div className="mb-4">
@@ -82,6 +85,7 @@ const Register = () => {
                     value={email}
                     onChange={onChange}
                     required
+                    disabled={isLoading}
                 />
             </div>
             <div className="mb-4">
@@ -98,6 +102,7 @@ const Register = () => {
                     onChange={onChange}
                     required
                     minLength="6"
+                    disabled={isLoading}
                 />
             </div>
             <div className="mb-6">
@@ -114,19 +119,32 @@ const Register = () => {
                     onChange={onChange}
                     required
                     minLength="6"
+                    disabled={isLoading}
                 />
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center">
                 <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                    className={`text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-300 ${
+                        isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
+                    }`}
                     type="submit"
+                    disabled={isLoading}
                 >
-                    Register
+                    {isLoading ? (
+                        <div className="flex items-center justify-center">
+                            <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating Account...
+                        </div>
+                    ) : 'Register'}
                 </button>
-                <div className="mt-2 pb-3 text-center">
+                
+                <div className="mt-4 text-center">
                     <p className="text-gray-600 text-sm">
                         Already have an account?{' '}
-                        <Link to="/register" className="text-blue-500 hover:text-blue-700 font-bold underline transition duration-200">
+                        <Link to="/login" className="text-blue-500 hover:text-blue-700 font-bold underline transition duration-200">
                             Log in
                         </Link>
                     </p>
